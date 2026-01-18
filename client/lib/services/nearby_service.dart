@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:convert';
+import 'dart:math';
 import 'package:nearby_connections/nearby_connections.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -40,6 +41,7 @@ class NearbyService {
         userNickName,
         strategy,
         onConnectionInitiated: (String id, ConnectionInfo info) {
+          connectedEndpoints[id] = info.endpointName;
           if (onConnectionInitiated != null) {
             onConnectionInitiated!(id, info.endpointName);
           }
@@ -97,12 +99,14 @@ class NearbyService {
         userName!,
         endpointId,
         onConnectionInitiated: (id, info) {
+          connectedEndpoints[id] = info.endpointName;
           if (onConnectionInitiated != null) {
             onConnectionInitiated!(id, info.endpointName);
           }
         },
         onConnectionResult: (id, status) {
           if (status == Status.CONNECTED) {
+            connectedEndpoints[id] = id;
             if (onConnectionResult != null) onConnectionResult!(id);
           }
         },
@@ -132,7 +136,32 @@ class NearbyService {
   }
 
   Future<void> sendBytesPayload(String endpointId, String msg) async {
-    var payload = Payload.forBytes(Uint8List.fromList(msg.codeUnits));
+    // Correct Payload construction with ID
+    var payload = Payload(
+      id: Random().nextInt(1000000), // Generate random ID
+      bytes: Uint8List.fromList(msg.codeUnits),
+    );
     await Nearby().sendPayload(payload, endpointId);
+  }
+
+  // Broadcast to ALL connected endpoints
+  Future<void> broadcastPayload(String msg) async {
+    if (connectedEndpoints.isEmpty) return;
+
+    // Create new payload for loop? No, payload ID should technically be unique per transmission or same?
+    // Usually same payload object can be sent multiple times?
+    // Let's create one.
+    var payload = Payload(
+      id: Random().nextInt(1000000),
+      bytes: Uint8List.fromList(msg.codeUnits),
+    );
+
+    for (var endpointId in connectedEndpoints.keys) {
+      try {
+        await Nearby().sendPayload(payload, endpointId);
+      } catch (e) {
+        print("Failed to send to $endpointId: $e");
+      }
+    }
   }
 }

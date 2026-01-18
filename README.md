@@ -12,8 +12,9 @@ Perfect for hiking, festivals, disasters, or anywhere connectivity is scarce.
 ## 🚀 Features
 
 -   **📡 100% Offline**: Zero dependency on ISPs or servers.
--   **🔗 P2P Mesh Technology**: Powered by Google Nearby Connections API (Star/Cluster strategy).
--   **⚡ High-Speed Transfer**: Uses Wi-Fi Direct for high-bandwidth payloads (text, and future file support).
+-   **🕸️ Mesh Networking (New!)**: Messages "flood" through nearby devices to extend range beyond a single connection (Multi-hop).
+-   **🔗 P2P Mesh Technology**: Powered by Google Nearby Connections API (Star/Cluster topology).
+-   **⚡ High-Speed Transfer**: Uses Wi-Fi Direct for high-bandwidth payloads.
 -   **🔒 Private & Local**: Messages are stored locally on your device (SQLite). Your data never leaves your proximity.
 -   **📍 Proximity Discovery**: Automatically discover users within ~100 meters.
 
